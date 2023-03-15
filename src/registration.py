@@ -4,12 +4,12 @@ import numpy as np
 import pathlib
 import fsl.wrappers as fl
 import nibabel as nib
-from functools import wraps
 
 
 #assets_dir = pathlib.Path.cwd() / "assets"
 parent_dir = pathlib.Path(__file__).resolve().parent
-assets_dir = parent_dir / pathlib.Path.cwd() / "assets"
+assets_dir = parent_dir / "assets"
+
 MNI_152_bone = assets_dir / 'MNI152_T1_1mm_bone.nii.gz'
 MNI_152 = assets_dir / 'MNI152_T1_1mm.nii.gz'
 

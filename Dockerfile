@@ -4,7 +4,7 @@ ENV DEBIAN_FRONTEND noninteractive
 
 # ===================Module Dependencies============================
 
-RUN pip3 install nibabel numpy
+RUN pip3 install nibabel numpy onnx onnxruntime
 
 # ===================Copy Source Code===============================
 

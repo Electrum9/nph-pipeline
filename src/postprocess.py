@@ -5,50 +5,34 @@ import skimage
 import copy
 
 parent_dir = pathlib.Path(__file__).resolve().parent
-assets_dir = parent_dir / pathlib.Path.cwd() / "assets"
+assets_dir = parent_dir / "assets"
 
-test_transformed_path = "/home/shailja/NPH_mni/"
+                                                                      # NAME
+probmap_files = [assets_dir / "MNI_ventr_prob_map_image.nii.gz",      # ventr
+                 assets_dir / "MNI_sub_prob_map_image.nii.gz",        # sub
+                 assets_dir / "MNI_cereb_prob_map_image.nii.gz",      # cereb
+                 assets_dir / "MNI_4ventr_prob_map_image.nii.gz",     # 4ventr
+                 assets_dir / "MNI_background_prob_map_image.nii.gz", # background
+                ]
 
-ventr_prob_map = "MNI_ventr_prob_map_image.nii.gz"
-sub_prob_map = "MNI_sub_prob_map_image.nii.gz"
-cerebellum_prob_map = "MNI_cereb_prob_map_image.nii.gz"
-fourth_prob_map = "MNI_4ventr_prob_map_image.nii.gz"
-background_prob_map = "MNI_background_prob_map_image.nii.gz"
+get_name = lambda f: f.split('_')[1]
 
-ventr_prob_img = nib.load(ventr_prob_map)
-ventr_prob_img_data = ventr_prob_img.get_fdata()
+prob_map = {get_name(f) : nib.load(f).get_fdata() for f in probmap_files} # dictionary of probability map arrays, for each brain region
 
-sub_prob_img = nib.load(sub_prob_map)
-sub_prob_img_data = sub_prob_img.get_fdata()
-
-cerebellum_prob_img = nib.load(cerebellum_prob_map)
-cerebellum_prob_img_data = cerebellum_prob_img.get_fdata()
-
-fourth_prob_img = nib.load(fourth_prob_map)
-fourth_prob_img_data = fourth_prob_img.get_fdata()
-
-background_prob_img = nib.load(background_prob_map)
-background_prob_img_data = background_prob_img.get_fdata()
-
-files_list = os.listdir(test_transformed_path)
-#for file in files_list:
-#    if ".nii" in file:
-#        
-#        
-#        if "post" not in file and "all" not in file:
-#img = nib.load(test_transformed_path+file)
+ventr_prob_img_data      = prob_map['ventr']
+sub_prob_img_data        = prob_map['sub']
+cerebellum_prob_img_data = prob_map['cereb']
+fourth_prob_img_data     = prob_map['4ventr']
+background_prob_img_data = prob_map['background']
 
 
-#print(test_transformed_path+file.split('.')[0]+'MNI_post_processed.nii.gz')
-#nib.save(post_processed, test_transformed_path+file.split('.')[0]+'MNI_post_processed.nii.gz')
-#print(np.unique(post_processed_img, return_counts = True))
+def correct(img):
+    """ Intakes segmented image and corrects it (post-processing).
+    """
 
-def correct(segmented):
-    img = segmented # TODO: Replace with nifti object
     img_data = np.round(img.get_fdata())
     #print(np.unique(img_data))
-    #dic_label = {}
-    post_processed_img= copy.deepcopy(img_data)
+    post_processed_img = copy.deepcopy(img_data)
     ventr_correction = np.where(
                         img_data == 1,
                         1,
@@ -56,7 +40,6 @@ def correct(segmented):
     for k in range(img_data.shape[2]):
         labeled_image, count = skimage.measure.label(ventr_correction[:,:,k], return_num=True)
         label, label_count = np.unique(labeled_image, return_counts = True)
-    #                 print(count)
         
         for i in range(count+1):
             if (label_count[i]) < 600:
