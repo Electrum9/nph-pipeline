@@ -21,12 +21,12 @@ def run_module(input_path_dict, output_folder_path):
 
     raw_scan = nib.load(scans_path)
 
-    (rest, skull) = pre.skullstrip(raw_scan)
-    segmented = seg.inference(rest)
-    (registered, affine) = reg.CT_to_MNI(segmented, raw_scan, bone=skull)
-    # registered is segmented scan in MNI space
+    (mni_scan, affine) = reg.CT_to_MNI(raw_scan)
+    (rest, mask) = pre.skullstrip(mni_scan)
+    segmented = seg.inference(rest, mask)
 
-    corrected = post.correct(segmented)
+    registered_seg = reg.apply_affine(segmented, affine)
+    corrected = post.correct(registered_seg)
 
     (final_img, inverse_affine) = reg.MNI_to_CT(corrected, raw_scan, affine)
 

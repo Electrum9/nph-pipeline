@@ -4,11 +4,8 @@ import numpy as np
 import pathlib
 import fsl.wrappers as fl
 import nibabel as nib
+from assets import MNI_152_bone, MNI_152
 
-
-#assets_dir = pathlib.Path.cwd() / "assets"
-parent_dir = pathlib.Path(__file__).resolve().parent
-assets_dir = parent_dir / "assets"
 
 MNI_152_bone = assets_dir / 'MNI152_T1_1mm_bone.nii.gz'
 MNI_152 = assets_dir / 'MNI152_T1_1mm.nii.gz'
@@ -111,7 +108,7 @@ def MNI_to_CT(MNI_scan, ct_scan, affine_mtx, res_path=fl.LOAD, inv_path=fl.LOAD)
 
     return res, inv_mtx
 
-def CT_to_MNI(seg_scan, ct_scan, res_path=fl.LOAD, affine_mtx_path=fl.LOAD, bone=None):
+def CT_to_MNI(ct_scan, res_path=fl.LOAD, affine_mtx_path=fl.LOAD, bone=None, apply_transformation=True):
     """ Finds transformation from CT to MNI space.
 
     Parameters
@@ -134,11 +131,19 @@ def CT_to_MNI(seg_scan, ct_scan, res_path=fl.LOAD, affine_mtx_path=fl.LOAD, bone
         The bone regions of the scan (skull-only regions). If this is set to
         None, then a (primitive) skull-stripping procedure will be performed.
 
+    apply_transformation:
+        Flag for indicating whether derived affine transformation should be
+        applied to given scan.
+
     Returns
     ----------
 
     tuple[pathlib.Path | nibabel.nifti1.Nifti1Image, numpy.ndarray]:
         Registered scan, using FSL flirt; numpy array containing matrix used for transformation.
+
+    numpy.ndarray:
+        Numpy array containing matrix used for transformation.
+        
     """
 
     if bone is None:
@@ -153,14 +158,28 @@ def CT_to_MNI(seg_scan, ct_scan, res_path=fl.LOAD, affine_mtx_path=fl.LOAD, bone
     else:
         mtx = mtx['omat']
 
-    seg_scan = fl.applyxfm(seg_scan, MNI_152, mtx, res_path, interp='nearestneighbour')
+    if not apply_transformation: return mtx
+
+    ct_scan = fl.applyxfm(ct_scan, MNI_152, mtx, res_path, interp='nearestneighbour')
 
     if res_path != fl.LOAD:
-        seg_scan = res_path
+        ct_scan = res_path
     else:
-        seg_scan = seg_scan['out']
+        ct_scan = ct_scan['out']
 
-    return seg_scan, mtx
+    return ct_scan, mtx
+
+def apply_affine(scan, affine, res_path=fl.LOAD):
+
+    res = fl.applyxfm(scan, MNI_152, mtx, res_path, interp='nearestneighbour')
+
+    if res_path != fl.LOAD:
+        res = res_path
+    else:
+        res = res['out']
+
+    return res
+
 
 if __name__ == "__main__":
     '''

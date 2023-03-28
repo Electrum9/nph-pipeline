@@ -3,21 +3,7 @@ import numpy as np
 import os
 import skimage
 import copy
-
-parent_dir = pathlib.Path(__file__).resolve().parent
-assets_dir = parent_dir / "assets"
-
-                                                                      # NAME
-probmap_files = [assets_dir / "MNI_ventr_prob_map_image.nii.gz",      # ventr
-                 assets_dir / "MNI_sub_prob_map_image.nii.gz",        # sub
-                 assets_dir / "MNI_cereb_prob_map_image.nii.gz",      # cereb
-                 assets_dir / "MNI_4ventr_prob_map_image.nii.gz",     # 4ventr
-                 assets_dir / "MNI_background_prob_map_image.nii.gz", # background
-                ]
-
-get_name = lambda f: f.split('_')[1]
-
-prob_map = {get_name(f) : nib.load(f).get_fdata() for f in probmap_files} # dictionary of probability map arrays, for each brain region
+from assets import prob_map
 
 ventr_prob_img_data      = prob_map['ventr']
 sub_prob_img_data        = prob_map['sub']
