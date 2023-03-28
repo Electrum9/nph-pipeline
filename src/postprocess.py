@@ -5,11 +5,11 @@ import skimage
 import copy
 from assets import prob_map
 
-ventr_prob_img_data      = prob_map['ventr']
-sub_prob_img_data        = prob_map['sub']
-cerebellum_prob_img_data = prob_map['cereb']
-fourth_prob_img_data     = prob_map['4ventr']
-background_prob_img_data = prob_map['background']
+ventr_prob_img_data      = nib.load(prob_map['ventr']).get_fdata()
+sub_prob_img_data        = nib.load(prob_map['sub']).get_fdata()
+cerebellum_prob_img_data = nib.load(prob_map['cereb']).get_fdata()
+fourth_prob_img_data     = nib.load(prob_map['4ventr']).get_fdata()
+background_prob_img_data = nib.load(prob_map['background']).get_fdata()
 
 
 def correct(img):

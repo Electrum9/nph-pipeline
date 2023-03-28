@@ -4,7 +4,7 @@ import numpy as np
 import nibabel as nib
 import logging
 
-def compute_metric(final_img):
+def compute_metric(final_img, name):
 
     fieldnames = ['Name',
                  'Total Brain Volume', 
@@ -43,7 +43,7 @@ def compute_metric(final_img):
     brain_count_7 = (focused_final_N != 0).sum()
     logging.info(f"brain_count_7={brain_count_7}")
 
-    name = file.name.split('-')[-1].split('.')[0]
+    #name = file.name.split('-')[-1].split('.')[0]
 
     results = (name, 
                int(total_brain_count*mm),  

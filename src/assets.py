@@ -3,6 +3,7 @@ import pathlib
 # ASSETS LOCATION
 parent_dir = pathlib.Path(__file__).resolve().parent
 assets_dir = parent_dir / "assets"
+model_dir = parent_dir
 
 # REGISTRATION FILES
 MNI_152_bone = assets_dir / 'MNI152_T1_1mm_bone.nii.gz'
@@ -16,3 +17,6 @@ prob_map = {'ventr'      : assets_dir / "MNI_ventr_prob_map_image.nii.gz",
             'background' : assets_dir / "MNI_background_prob_map_image.nii.gz", 
            }
 
+# MODEL FILES
+
+model = model_dir / "test_bs200.onnx"

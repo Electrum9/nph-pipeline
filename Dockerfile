@@ -4,7 +4,7 @@ ENV DEBIAN_FRONTEND noninteractive
 
 # ===================Module Dependencies============================
 
-RUN pip3 install nibabel numpy onnx onnxruntime scikit-image
+RUN pip3 install nibabel numpy onnx onnxruntime scikit-image scipy
 
 # ===================Copy Source Code===============================
 

@@ -6,10 +6,6 @@ import fsl.wrappers as fl
 import nibabel as nib
 from assets import MNI_152_bone, MNI_152
 
-
-MNI_152_bone = assets_dir / 'MNI152_T1_1mm_bone.nii.gz'
-MNI_152 = assets_dir / 'MNI152_T1_1mm.nii.gz'
-
 def bone_extracted(ct_img, return_mask=False):
     """ Extract the bone of the CT scan based on the hard thresholding on pixel value.
 
@@ -171,7 +167,7 @@ def CT_to_MNI(ct_scan, res_path=fl.LOAD, affine_mtx_path=fl.LOAD, bone=None, app
 
 def apply_affine(scan, affine, res_path=fl.LOAD):
 
-    res = fl.applyxfm(scan, MNI_152, mtx, res_path, interp='nearestneighbour')
+    res = fl.applyxfm(scan, MNI_152, affine, res_path, interp='nearestneighbour')
 
     if res_path != fl.LOAD:
         res = res_path

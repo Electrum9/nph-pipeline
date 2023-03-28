@@ -4,6 +4,8 @@ import nibabel as nib
 import sys
 from scipy.special import softmax
 import heapq
+import assets
+import logging
 
 def eliminateNoise(label, minArea=16):
     neighbors=[(-1,0),(1,0),(0,-1),(0,1)]
@@ -109,7 +111,7 @@ def patch_generator(image, mask, batch_size=200):
         yield np.array(samples), b
 
 
-def inference(image, mask, model="test_bs200.onnx", batch_size=200):
+def inference(image, mask, model=None, batch_size=200):
     """ Runs trained model on raw scan, yielding a segmented result.
 
     The raw scan provided is expected to be skull-stripped (no bone regions).
@@ -146,9 +148,15 @@ def inference(image, mask, model="test_bs200.onnx", batch_size=200):
         Segmented version of raw scan.
     """
 
-    patches = patch_generator(image, mask, batch_size=batch_size) # generates batches of patches (of batch_size)
+    if model is None:
+        model = str(assets.model)
 
-    reconstructed = np.zeros_like(image) # TODO: Look into doing things in-place using given image (but make it option as it is destructive)
+    patches = patch_generator(image.get_fdata(), 
+                              mask.get_fdata(), 
+                              batch_size=batch_size) 
+    # Generates batches of patches (of batch_size)
+
+    reconstructed = np.zeros_like(image.get_fdata()) # TODO: Look into doing things in-place using given image (but make it option as it is destructive)
     ort_session = onnxruntime.InferenceSession(model)
 
     for p, idx in patches:
@@ -163,14 +171,16 @@ def inference(image, mask, model="test_bs200.onnx", batch_size=200):
         pred = np.argmax(softmax_out, axis=1)
         #breakpoint()
 
+        # logging.info(f"reconstructed.shape = {reconstructed.shape}")
+        # logging.info(f"pred.shape = {pred.shape}")
         for k in range(pred.shape[0]):
             x, y, z = idx[k]
             reconstructed[x:x+1+1,y:y+1+1,z] = pred[k,0,...]
 
     # Noise Reduction
-    result_noNoise = eliminateNoise(result, minArea=64)
+    result_noNoise = eliminateNoise(reconstructed, minArea=64)
     filldots = cutoff(result_noNoise)
 
-    final = nib.Nifti1Image(filldots, affine=None, header=scan.header)
+    final = nib.Nifti1Image(filldots, affine=None, header=image.header)
 
-    return reconstructed
+    return final
