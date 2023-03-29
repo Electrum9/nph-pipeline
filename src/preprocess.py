@@ -41,7 +41,7 @@ def skullstrip(scan):
 
     #affine = np.eye(4)
     nii_image = nib.Nifti1Image(scan_data.astype(np.float32), affine=None, header=header)
-    nii_mask_image = nib.Nifti1Image(mask.astype(np.float32), affine=None, header=header)
+    nii_mask_image = nib.Nifti1Image(mask_ret.astype(np.float32), affine=None, header=header)
     logging.info(f"nii_image.shape = {nii_image.shape}")
     logging.info(f"nii_image is empty: {not np.any(nii_image)}")
     logging.info(f"nii_mask_image.shape = {nii_mask_image.shape}")
