@@ -49,7 +49,7 @@ def bone_extracted(ct_img, return_mask=False):
     
     return output
 
-def MNI_to_CT(MNI_scan, ct_scan, affine_mtx, res_path=fl.LOAD, inv_path=fl.LOAD):
+def MNI_to_CT(MNI_scan, ct_scan, affine_mtx=None, res_path=fl.LOAD, inv_path=fl.LOAD, reuse=None):
     """Brings scans in MNI space to subject space.
 
     This requires the segmented scan's raw counterpart scan, as well
@@ -78,6 +78,10 @@ def MNI_to_CT(MNI_scan, ct_scan, affine_mtx, res_path=fl.LOAD, inv_path=fl.LOAD)
     res_path: pathlib.Path | object
         Path where the resultant transformed scan should be saved.
 
+    reuse: Optional[numpy.ndarray | pathlib.Path]
+        Optionally specify an array to be used for the inverse transformation.
+        Use this only if the inverse affine transformation was already computed.
+
     Returns
     -------
 
@@ -87,12 +91,17 @@ def MNI_to_CT(MNI_scan, ct_scan, affine_mtx, res_path=fl.LOAD, inv_path=fl.LOAD)
 
     """
 
-    inv_mtx = fl.invxfm(affine_mtx, omat=inv_path) 
+    if reuse is None:
+        assert affine_mtx is not None
 
-    if inv_path != fl.LOAD:
-        inv_mtx = inv_path
+        inv_mtx = fl.invxfm(affine_mtx, omat=inv_path) 
+
+        if inv_path != fl.LOAD:
+            inv_mtx = inv_path
+        else:
+            inv_mtx = inv_mtx['omat']
     else:
-        inv_mtx = inv_mtx['omat']
+        inv_mtx = reuse
 
     reference = fl.applyxfm(MNI_152, ct_scan, inv_mtx, out=fl.LOAD)['out']
     res = fl.applyxfm(MNI_scan, reference, inv_mtx, out=res_path, interp='nearestneighbour') 

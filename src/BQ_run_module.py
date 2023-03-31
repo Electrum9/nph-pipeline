@@ -31,7 +31,11 @@ def run_module(input_path_dict, output_folder_path):
     print("CT to MNI for Raw Scan: FINISHED")
     (rest, mask) = pre.skullstrip(mni_scan)
     print("Skullstrip scan: FINISHED")
-    segmented = seg.inference(rest, mask)
+
+    ct_rest, inverse_affine = reg.MNI_to_CT(rest, raw_scan, affine)
+    ct_mask, _ = reg.MNI_to_CT(mask, raw_scan, reuse=inverse_affine)
+
+    segmented = seg.inference(ct_rest, ct_mask)
     print("Inference: FINISHED")
     # breakpoint()
 
@@ -39,7 +43,7 @@ def run_module(input_path_dict, output_folder_path):
     print("Segmented to MNI: FINISHED")
     corrected = post.correct(registered_seg)
 
-    (final_img, inverse_affine) = reg.MNI_to_CT(corrected, raw_scan, affine)
+    (final_img, inverse_affine) = reg.MNI_to_CT(corrected, raw_scan, reuse=inverse_affine)
 
     nib.save(mni_scan, "mni_scan.nii.gz")
     nib.save(rest, "rest.nii.gz")
