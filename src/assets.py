@@ -18,5 +18,4 @@ prob_map = {'ventr'      : assets_dir / "MNI_ventr_prob_map_image.nii.gz",
            }
 
 # MODEL FILES
-
 model = model_dir / "test_bs200.onnx"
