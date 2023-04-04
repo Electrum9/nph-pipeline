@@ -7,6 +7,7 @@
                <template>
                     <tag name="label" value="Input Scans"/>
                     <tag name="accepted_type" value="image"/>
+                    <tag name="accepted_type" value="dataset"/>
                     <tag name="prohibit_upload" value="True"/>
                </template>
           </tag>
@@ -31,7 +32,7 @@
          
      <tag name="execute_options">
                   
-          <tag name="iterable" value="image_url" type="dataset"/>
+          <tag name="iterable" value="Input Scans" type="dataset"/>
               
      </tag>
          
