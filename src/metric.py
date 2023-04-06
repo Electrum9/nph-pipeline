@@ -5,12 +5,27 @@ import nibabel as nib
 import logging
 
 def compute_metric(final_img, name):
+    """ Computes various metrics of interest from the given image.
 
-    fieldnames = ['Name',
-                 'Total Brain Volume', 
-                 'Center Ventricle Volume', 
-                 'Center Brain Volume', 
-                 'Center Ventricle to Brain Volume Ratio']
+    Specifically, the metrics computed are the Total Brain Volume, Center Ventricle Volume, Center Brain Volume,
+    and the Center Ventricle to Brain Volume Ratio (aka the Ventricular Volumetric Metric).
+
+    Parameters
+    ----------
+
+    final_img: nibabel.Nifti1Image
+        The brain scans that the metrics will be computed for.
+
+    name: str
+        Name of the subject the brain scans correspond to.
+
+    Returns
+    -------
+
+    dict[str, str | int | float]:
+        Dictionary mapping names of each metric to their respective values.
+    """
+
 
     #final_img = nib.load(file)
     mm = abs(final_img.header['pixdim'][1] * final_img.header['pixdim'][2] * final_img.header['pixdim'][3])
@@ -45,10 +60,10 @@ def compute_metric(final_img, name):
 
     #name = file.name.split('-')[-1].split('.')[0]
 
-    results = (name, 
-               int(total_brain_count*mm),  
-               int(ventricle_count_7*mm), 
-               int(brain_count_7*mm), 
-               round(ventricle_count_7/brain_count_7, 3))
+    results = {'Name': name,
+               'Total Brain Volume': int(total_brain_count*mm), 
+               'Center Ventricle Volume': int(ventricle_count_7*mm),
+               'Center Brain Volume': int(brain_count_7*mm), 
+               'Ventricular Volume Metric': np.round(ventricle_count_7/brain_count_7, 3)}
 
-    return dict(zip(fieldnames, results))
+    return results

@@ -4,10 +4,11 @@ import numpy as np
 import pathlib
 import fsl.wrappers as fl
 import nibabel as nib
+
 from assets import MNI_152_bone, MNI_152
 
-def bone_extracted(ct_img, return_mask=False):
-    """ Extract the bone of the CT scan based on the hard thresholding on pixel value.
+def basic_skullstrip(ct_img):
+    """ Eliminate the bone of the CT scan based on hard thresholding of pixel value.
 
     Parameters
     ---------- 
@@ -15,17 +16,11 @@ def bone_extracted(ct_img, return_mask=False):
     ct_img: nibabel.nifti1.Nifti1Image
         The raw scan.
 
-    return_mask: bool
-        Option for returning the mask for regions containing bone pixels, if desired.
-
     Returns
     ------
 
-    bone_regions: nibabel.nifti1.Nifti1Image
-        Subsections of the raw scan, containing bone-like regions.
-
-    tuple[nibabel.nifti1.Nifti1Image, numpy.ndarray]
-        Subsections of the raw scan containing bone-like regions, and corresponding binary mask.
+    output: nibabel.nifti1.Nifti1Image
+        Subsections of the raw scan, excluding bone-like regions.
 
     """
     
@@ -34,19 +29,15 @@ def bone_extracted(ct_img, return_mask=False):
     #print("min = ", np.amin(ct_img_data))
     #print("max = ", np.amax(ct_img_data))
 
-    bone_regions = np.zeros_like(ct_img_data)
+    brain_regions = np.zeros_like(ct_img_data)
 
     bone_pixel_threshold = 500 # bone pixel threshold
 
-    bone_mask = ct_img_data >= bone_pixel_threshold
-    bone_regions[bone_mask] = ct_img_data[bone_mask]
+    brain_mask = ct_img_data <= bone_pixel_threshold # brain only regions (no bone)
+    brain_regions[brain_mask] = ct_img_data[brain_mask]
 
+    output = nib.Nifti1Image(brain_regions, ct_img.affine, ct_img.header) # preserve all other info of scan
 
-    output = nib.Nifti1Image(bone_regions, ct_img.affine, ct_img.header) # preserve all other info of scan
-
-    if return_mask:
-        return output, bone_mask
-    
     return output
 
 def MNI_to_CT(MNI_scan, ct_scan, affine_mtx=None, res_path=fl.LOAD, inv_path=fl.LOAD, reuse=None):
@@ -113,7 +104,7 @@ def MNI_to_CT(MNI_scan, ct_scan, affine_mtx=None, res_path=fl.LOAD, inv_path=fl.
 
     return res, inv_mtx
 
-def CT_to_MNI(ct_scan, res_path=fl.LOAD, affine_mtx_path=fl.LOAD, bone=None, apply_transformation=True):
+def CT_to_MNI(ct_scan, res_path=fl.LOAD, affine_mtx_path=fl.LOAD, brain_regions=None, apply_transformation=True):
     """ Finds transformation from CT to MNI space.
 
     Parameters
@@ -132,9 +123,9 @@ def CT_to_MNI(ct_scan, res_path=fl.LOAD, affine_mtx_path=fl.LOAD, bone=None, app
         set to a special value which indicates it should be stored in memory,
         as an object.
 
-    bone:
-        The bone regions of the scan (skull-only regions). If this is set to
-        None, then a (primitive) skull-stripping procedure will be performed.
+    brain_regions:
+        The brain regions of the scan (no skull). If this is set to
+        None, then a primitive skull-stripping procedure will be performed.
 
     apply_transformation:
         Flag for indicating whether derived affine transformation should be
@@ -151,12 +142,13 @@ def CT_to_MNI(ct_scan, res_path=fl.LOAD, affine_mtx_path=fl.LOAD, bone=None, app
         
     """
 
-    if bone is None:
-        bone = bone_extracted(ct_scan)
-    elif pathlike.Path(bone).exists():
-        bone = nib.load(bone).get_fdata()
+    if brain_regions is None:
+        brain_regions = basic_skullstrip(ct_scan) # improves registration
+        # brain_regions = ct_scan # NOTE: Temporarily turned off primitive skull stripping
+    else:
+        assert isinstance(brain_regions, nib.Nifti1Image)
 
-    mtx = fl.flirt(src=bone, ref=MNI_152_bone, omat=affine_mtx_path, bins=256, searchrx=(-180,180), searchry=(-180,180), searchrz=(-180,180), dof=12, interp='trilinear')
+    mtx = fl.flirt(src=brain_regions, ref=MNI_152, omat=affine_mtx_path, bins=256, searchrx=(-180,180), searchry=(-180,180), searchrz=(-180,180), dof=12, interp='trilinear')
 
     if affine_mtx_path != fl.LOAD:
         mtx = affine_mtx_path

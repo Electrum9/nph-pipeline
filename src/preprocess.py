@@ -28,56 +28,45 @@ def skullstrip(scan):
     scan_data = scan.get_fdata().copy()
 
     # Apply MNI mask
-    scan_data[np.where(mask >= 0.3)] = 0 
+    scan_data[mask >= 0.3] = 0 
 
     mask_ret = scan_data.copy()
 
     # Generate binary mask
 
-    mask_ret[np.where(mask_ret <= 0)] = 0
-    mask_ret[np.where(mask_ret > 0)] = 1
+    mask_ret[mask_ret <= 0] = 0
+    mask_ret[mask_ret > 0] = 1
 
     header = scan.header
 
     #affine = np.eye(4)
     nii_image = nib.Nifti1Image(scan_data.astype(np.float32), affine=None, header=header)
     nii_mask_image = nib.Nifti1Image(mask_ret.astype(np.float32), affine=None, header=header)
+
     logging.info(f"nii_image.shape = {nii_image.shape}")
     logging.info(f"nii_image is empty: {not np.any(nii_image)}")
     logging.info(f"nii_mask_image.shape = {nii_mask_image.shape}")
 
     return nii_image, nii_mask_image
 
-#def MNISkullStrip(scanFile):
-#
-#    scan = nib.load(scanFile).get_fdata()
-#    
+#def skullstrip(scan):
+#    """ Original implementation
+#    """
+
+#    scan_data = scan.get_fdata().copy()
+    
 #    # after conversion apply MNI mask
-#    scan[np.where(mask >= 0.3)] = 0
-#
+#    scan_data[np.where(mask >= 0.3)] = 0
+
 #    #generate binary mask
-#    mask_ret = nib.load(scanFile).get_fdata()
+#    mask_ret = scan_data.copy()
 #    mask_ret[np.where(mask >= 0.3)] = 0
 #    mask_ret[np.where(mask_ret <= 0)] = 0
 #    mask_ret[np.where(mask_ret > 0)] = 1
-#
-#    header = nib.load(scanFile).header
-#
-#    return scan, mask_ret, header
-#
-#
-#
-#scans = os.listdir("Scans/") # raw scans
-#for scan in scans:
-#    if(scan.endswith("nii.gz")):
-#        name = scan.split('.')[0]
-#
-#        proc, mask, header = MNISkullStrip("Scans/" + scan)
-#
-#        saveName = name[:len(name)-7]
-#
-#        nii_image = nib.Nifti1Image(proc.astype(np.float32), affine=None, header=header)
-#        nib.save(nii_image, "stripped/" + saveName + "_MNI152.nii.gz") # the corrected raw scans, should have a good number of slices bounded to just the brain + maybe some thin shape of the skull
-#
-#        nii_mask_image = nib.Nifti1Image(mask.astype(np.float32), affine=None, header=header)
-#        nib.save(nii_mask_image, "stripped/" + saveName + "_MNI152_Mask.nii.gz")
+
+#    header = scan.header
+
+#    nii_image = nib.Nifti1Image(scan_data.astype(np.float32), affine=None, header=header)
+#    nii_mask_image = nib.Nifti1Image(mask_ret.astype(np.float32), affine=None, header=header)
+
+#    return nii_image, nii_mask_image
