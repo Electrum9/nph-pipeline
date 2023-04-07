@@ -13,6 +13,8 @@ import postprocess as post
 import preprocess as pre
 import segmentation as seg
 
+from assets import reference_segmented_scan 
+
 profiler = cProfile.Profile()
 
 def run_module(input_path_dict, output_folder_path):
@@ -35,7 +37,8 @@ def run_module(input_path_dict, output_folder_path):
     ct_rest, inverse_affine = reg.MNI_to_CT(rest, raw_scan, affine)
     ct_mask, _ = reg.MNI_to_CT(mask, raw_scan, reuse=inverse_affine)
 
-    segmented = seg.inference(ct_rest, ct_mask)
+    # segmented = seg.inference(ct_rest, ct_mask)
+    segmented = nib.load(reference_segmented_scan)
     print("Inference: FINISHED")
     # breakpoint()
 

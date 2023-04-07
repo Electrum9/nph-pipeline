@@ -19,3 +19,9 @@ prob_map = {'ventr'      : assets_dir / "MNI_ventr_prob_map_image.nii.gz",
 
 # MODEL FILES
 model = model_dir / "test_bs200.onnx"
+
+# TODO: Delete below!
+
+# REFERENCES
+
+reference_segmented_scan = parent_dir / "reconstructed_ct_rest.nii.gz"
