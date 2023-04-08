@@ -45,13 +45,13 @@ def run_module(input_path_dict, output_folder_path):
 
     (final_img, inverse_affine) = reg.MNI_to_CT(corrected, raw_scan, reuse=inverse_affine)
 
-    nib.save(mni_scan, "mni_scan.nii.gz")
-    nib.save(rest, "rest.nii.gz")
-    nib.save(mask, "mask.nii.gz")
-    nib.save(segmented, "segmented.nii.gz")
-    nib.save(registered_seg, "registered_seg.nii.gz")
-    nib.save(corrected, "corrected.nii.gz")
-    nib.save(final_img, "final.nii.gz")
+    nib.save(mni_scan, name + "_mni_scan.nii.gz")
+    nib.save(rest, name + "_rest.nii.gz")
+    nib.save(mask, name + "_mask.nii.gz")
+    nib.save(segmented, name + "_segmented.nii.gz")
+    nib.save(registered_seg, name + "_registered_seg.nii.gz")
+    nib.save(corrected, name + "_corrected.nii.gz")
+    nib.save(final_img, name + "_final.nii.gz")
 
     #### END PIPELINE 
 

@@ -120,9 +120,9 @@ def inference(image, mask, model=None, batch_size=200):
     Class   Description
     -----   -----------
       0     Background
-      1     Skull
-      2     Subarachnoid
-      3     Ventricle
+      1     Ventricle
+      2     CSF
+      3     Subarachnoid
       4     Shunt
 
 
