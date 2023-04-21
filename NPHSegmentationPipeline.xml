@@ -22,11 +22,15 @@
                                     
                     <tag name="label" value="Outputs"/>
                                 
-                    <tag name="Output Metric" type="table"/>
                </template>
                        
           </tag>
               
+          <tag name="Output Scan" type="image">
+               <template>
+                    <tag name="label" value="Output Scan"/>
+               </template>
+          </tag>
      </tag>
          
      <tag name="execute_options">
@@ -63,5 +67,5 @@
          
      <tag name="authors" type="string" value="VB"/>
          
-     <tag name="description" type="string" value="Performs segmentation on raw scans, and calculates various metrics."/>
+     <tag name="description" type="string" value="Performs segmentation of CT scans, using ResNet patch based method."/>
 </module>

@@ -51,27 +51,29 @@ def run_module(input_path_dict, output_folder_path):
     nib.save(segmented, name + "_segmented.nii.gz")
     nib.save(registered_seg, name + "_registered_seg.nii.gz")
     nib.save(corrected, name + "_corrected.nii.gz")
-    nib.save(final_img, name + "_final.nii.gz")
+
+    final_name = name + "_final.nii.gz"
+    nib.save(final_img, final_name)
 
     #### END PIPELINE 
 
-    with open(result_path, mode='a+') as result_file:
-        # result_writer = csv.writer(result_file, delimiter=',')
-        result = metric.compute_metric(final_img, name)
+    # with open(result_path, mode='a+') as result_file:
+    #     # result_writer = csv.writer(result_file, delimiter=',')
+    #     result = metric.compute_metric(final_img, name)
 
-        result_writer = csv.DictWriter(result_file, fieldnames=result.keys())
+    #     result_writer = csv.DictWriter(result_file, fieldnames=result.keys())
 
-        if not exists: result_writer.writeheader()
+    #     if not exists: result_writer.writeheader()
 
-        result_writer.writerow(result) # column names
+    #     result_writer.writerow(result) # column names
 
-    output_paths_dict = {'Output Metric': str(result_path)}
+    # output_paths_dict = {'Output Metric': str(result_path)}
 
     profiler.disable()
     stats = pstats.Stats(profiler)
     stats.dump_stats('stats')
 
-    return output_paths_dict
+    return {'Output Scan': final_name}
 
 def main():
     input_path_dict = {'Input Scans': sys.argv[1]}

@@ -1,1 +1,1 @@
-{"Name": "NPHSegmentationPipeline", "Author": "VB", "Description": "Performs segmentation on raw scans, and calculates various metrics.", "Inputs": {"Input Scans": "image"}, "Outputs": {"Output Metric": "table"}}
+{"Name": "NPHSegmentationPipeline", "Author": "VB", "Description": "Performs segmentation of CT scans, using ResNet patch based method.", "Inputs": {"Input Scans": "image"}, "Outputs": {"Output Scan": "image"}}
