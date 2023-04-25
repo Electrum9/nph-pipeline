@@ -84,7 +84,7 @@ def get_center(image, mask, i, j, k):
     
     return sample, center
 
-def patch_generator(image, mask, batch_size=200):
+def patch_generator(image, mask, batch_size='max'):
     x,y,z = image.shape
     
     image2 = np.clip(image, -100, 200)
@@ -99,6 +99,9 @@ def patch_generator(image, mask, batch_size=200):
                 sample, center = get_center(image2, mask, i, j, k)
                 if center.any():
                     positions.append((i,j,k))
+
+    if batch_size == 'max':
+        batch_size = len(positions)
 
     batches = [positions[i:i+batch_size] for i in range(0, len(positions), batch_size)]
 
