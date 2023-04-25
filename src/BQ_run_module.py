@@ -35,7 +35,7 @@ def run_module(input_path_dict, output_folder_path):
     ct_rest, inverse_affine = reg.MNI_to_CT(rest, raw_scan, affine)
     ct_mask, _ = reg.MNI_to_CT(mask, raw_scan, reuse=inverse_affine)
 
-    segmented = seg.inference(ct_rest, ct_mask, batch_size=50000)
+    segmented = seg.inference(ct_rest, ct_mask, batch_size=5000)
     print("Inference: FINISHED")
     # breakpoint()
 
