@@ -65,7 +65,7 @@
             
      <tag name="title" type="string" value="NPHSegmentationPipeline"/>
          
-     <tag name="authors" type="string" value="VB"/>
+     <tag name="authors" type="string" value="Krithika, Shailja, Sanjay, Vikram"/>
          
      <tag name="description" type="string" value="Performs segmentation of CT scans, using ResNet patch based method."/>
 </module>

@@ -1,33 +1,9 @@
-# Sample Markdown
+# Overall
 
-This is some basic, sample markdown.
+Intakes a ``*.nii.gz`` file and returns back a segmented scan, using a ResNet patch-based method.
 
-## Second Heading
+## Usage
 
- * Unordered lists, and:
-  1. One
-  1. Two
-  1. Three
- * More
-
-> Blockquote
-
-And **bold**, *italics*, and even *italics and later **bold***. Even ~~strikethrough~~. [A link](https://markdowntohtml.com) to somewhere.
-
-And code highlighting:
-
-```js
-var foo = 'bar';
-
-function baz(s) {
-   return foo + ':' + s;
-}
-```
-
-Or inline code like `var foo = 'bar';`.
-
-Or an image of bears
-
-![bears](http://placebear.com/200/200)
-
-The end ...
+1. Select an ``*.nii.gz`` file from Bisque (you will need to upload it first if it is not already present).
+2. Run the module.
+3. Results will be returned as an ``*.nii.gz`` file -- this can be viewed directly, or downloaded if desired.
