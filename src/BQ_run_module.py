@@ -4,8 +4,6 @@ import csv
 import pathlib
 import os
 import sys
-import logging
-import cProfile, pstats
 
 import metric
 import registration as reg
@@ -13,10 +11,7 @@ import postprocess as post
 import preprocess as pre
 import segmentation as seg
 
-profiler = cProfile.Profile()
-
 def run_module(input_path_dict, output_folder_path):
-    profiler.enable()
     scans_path = pathlib.Path(input_path_dict['Input Scans'])
     result_path = output_folder_path / pathlib.Path("results.csv")
     exists = result_path.exists()
@@ -57,6 +52,8 @@ def run_module(input_path_dict, output_folder_path):
 
     #### END PIPELINE 
 
+    # Compute metric (commented out for now, so extra corrections can be applied to segmentation)
+
     # with open(result_path, mode='a+') as result_file:
     #     # result_writer = csv.writer(result_file, delimiter=',')
     #     result = metric.compute_metric(final_img, name)
@@ -69,9 +66,6 @@ def run_module(input_path_dict, output_folder_path):
 
     # output_paths_dict = {'Output Metric': str(result_path)}
 
-    profiler.disable()
-    stats = pstats.Stats(profiler)
-    stats.dump_stats('stats')
 
     return {'Output Scan': final_name}
 
